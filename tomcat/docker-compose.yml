@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  tomcat:
+    # give built image a unique name to avoid clashing with the default tomcat image
+    image: spsm_tomcat
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080
+   
