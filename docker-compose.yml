@@ -1,10 +1,35 @@
 version: '3.4'
 
 services:
-  spsm:
-    image: spsm
+
+  tomcat:
+    # give built image a unique name to avoid clashing with the default tomcat image
+    image: spsm_tomcat
+    build:
+      context: ./tomcat
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080
+   
+
+  haprimary:
+    #primary server
     build:
       context: .
       dockerfile: ./Dockerfile
-    ports:
-      - 3000:3000
+    image: spsm
+    command: -haprimary
+    
+    
+
+  habackup:
+    #backup server
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: spsm
+    command: -habackup
+    
+    
+
+
