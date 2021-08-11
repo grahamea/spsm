@@ -9,7 +9,7 @@ services:
       context: ./tomcat
       dockerfile: ./Dockerfile
     ports:
-      - 8080:8080
+      - 8068:8068
    
 
   haprimary:
@@ -23,6 +23,8 @@ services:
     environment: 
       - PRIMARYHOST=haprimary
       - BACKUPHOST=habackup
+    volumes:
+      - haprimary_projects_volume:/rtv/SolacePubSubMonitor/projects
     
     
 
@@ -36,8 +38,18 @@ services:
     hostname: habackup
     environment:
       - PRIMARYHOST=haprimary
-      - BACKUPHOST=habackup   
-    
+      - BACKUPHOST=habackup
+    volumes:
+      - habackup_projects_volume:/rtv/SolacePubSubMonitor/projects     
+
+volumes:
+  # volumes required for persistance so (updated) project settings survive a container restart (peristance)
+  # haprimary 
+  haprimary_projects_volume:
+  # habackup
+  habackup_projects_volume:
+
+
     
 
 
