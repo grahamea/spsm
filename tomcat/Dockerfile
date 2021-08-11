@@ -4,7 +4,7 @@
 # it is suggested to use the same base java image as the spsm container
 # to reuse / share image layers.
 #
-FROM tomcat:8.5-jdk11
+FROM tomcat:8.5.69-jdk11
 
 # LABEL maintainer=”support@rtview.com”
 
@@ -21,7 +21,6 @@ RUN \
 #
 ENV SL_TOMCAT SolacePubSubMonitor/apache-tomcat-8.5.69-sl
 
-RUN echo `pwd`
 
 #
 # Copy the modified configuration files 
