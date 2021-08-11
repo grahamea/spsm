@@ -1,34 +1,34 @@
 FROM adoptopenjdk:11
 
-#VOLUME /tmp
-#ARG JAVA_OPTS
-#ENV JAVA_OPTS=$JAVA_OPTS
-#COPY spsm.jar spsm.jar
-#EXPOSE 3000
+#
+# Add Tini to handle signal processing 
+#
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
 
-#ENTRYPOINT exec java $JAVA_OPTS -jar spsm.jar 
-# For Spring-Boot project, use the entrypoint below to reduce Tomcat startup time.
-#ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar spsm.jar
 
 ### Copy RTViewDataServer	
 ### Setup user for build execution and application runtime
-ENV APP_ROOT=/opt/SolacePubSubMonitor \
+ENV APP_ROOT=/rtv/SolacePubSubMonitor \
     USER_NAME=default \
     USER_UID=10001 
 ENV PROJECT_DIR=${APP_ROOT}/projects/rtview-server	
 ENV APP_HOME=${APP_ROOT}  PATH=$PATH:${APP_ROOT}/bin
 
+
 #
-# Add binaries
+# Add our own container shell binaries
 #
 RUN mkdir -p ${APP_HOME}
 COPY src/bin/run.sh ${APP_ROOT}/bin/run.sh
 
-#RUN chmod +x ${APP_ROOT}/bin/run.sh
-
-
 WORKDIR ${APP_ROOT}
 
-ENTRYPOINT ["run.sh"]
+#ENTRYPOINT ["run.sh"]
+
+# Use Tini as the entrypoint so that it handle signals for $PID 1 and sub processes
+ENTRYPOINT ["/tini", "-v", "--", "/rtv/SolacePubSubMonitor/bin/run.sh"]
+
 # using entrypoint means we can add option command line args using command
 #CMD ["-verbose"]
