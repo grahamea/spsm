@@ -16,6 +16,11 @@ ENV APP_ROOT=/rtv/SolacePubSubMonitor \
 ENV PROJECT_DIR=${APP_ROOT}/projects/rtview-server	
 ENV APP_HOME=${APP_ROOT}  PATH=$PATH:${APP_ROOT}/bin
 
+#
+# Copy local unpacked RTViewDataServer into container
+#
+COPY SolacePubSubMonitor/ ${APP_ROOT}/
+
 
 #
 # Add our own container shell binaries
@@ -24,6 +29,9 @@ RUN mkdir -p ${APP_HOME}
 COPY src/bin/run.sh ${APP_ROOT}/bin/run.sh
 
 WORKDIR ${APP_ROOT}
+
+# export potentially persistent volumes
+VOLUME ${PROJECT_DIR}
 
 #ENTRYPOINT ["run.sh"]
 
