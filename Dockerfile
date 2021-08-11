@@ -7,6 +7,22 @@ ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
+### Default to UTF-8 file.encoding
+ENV LANG en_US.utf8
+
+
+### add ifconfig as part of net tools so keying works
+
+### Add Missing packages in 1 RUN command so that only one layer is created
+RUN  \
+### Add your package needs here
+    INSTALL_PKGS="net-tools" && \
+    apt-get update && \
+    apt-get install -y ${INSTALL_PKGS} && \
+    apt-get clean && \ 
+    rm -rf /var/lib/apt/lists/*
+
+
 
 ### Copy RTViewDataServer	
 ### Setup user for build execution and application runtime
@@ -26,9 +42,9 @@ COPY SolacePubSubMonitor/ ${APP_ROOT}/
 # Add our own container shell binaries
 #
 RUN mkdir -p ${APP_HOME}
-COPY src/bin/run.sh ${APP_ROOT}/bin/run.sh
+COPY src/bin/*.sh ${APP_ROOT}/bin/
 
-WORKDIR ${APP_ROOT}
+WORKDIR ${APP_ROOT}/bin
 
 # export potentially persistent volumes
 VOLUME ${PROJECT_DIR}

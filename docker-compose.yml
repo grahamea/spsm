@@ -19,6 +19,10 @@ services:
       dockerfile: ./Dockerfile
     image: spsm
     command: -haprimary
+    hostname: haprimary
+    environment: 
+      - PRIMARYHOST=haprimary
+      - BACKUPHOST=habackup
     
     
 
@@ -29,6 +33,10 @@ services:
       dockerfile: ./Dockerfile
     image: spsm
     command: -habackup
+    hostname: habackup
+    environment:
+      - PRIMARYHOST=haprimary
+      - BACKUPHOST=habackup   
     
     
 
