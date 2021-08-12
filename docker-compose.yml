@@ -6,8 +6,8 @@ services:
     # give built image a unique name to avoid clashing with the default tomcat image
     image: spsm_tomcat
     build:
-      context: ./tomcat
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./tomcat.Dockerfile
     ports:
       - 8068:8068
    
