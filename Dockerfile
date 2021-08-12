@@ -49,6 +49,9 @@ WORKDIR ${APP_ROOT}/bin
 # export potentially persistent volumes
 VOLUME ${PROJECT_DIR}
 
+# expose port used by syslog listener
+EXPOSE 10601
+
 #ENTRYPOINT ["run.sh"]
 
 # Use Tini as the entrypoint so that it handle signals for $PID 1 and sub processes

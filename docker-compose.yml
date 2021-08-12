@@ -29,7 +29,9 @@ services:
       # use local (pre populated) mounted volumes 
       - ./volumes/haprimary/projects/rtview-server:/rtv/SolacePubSubMonitor/projects/rtview-server
       - ./volumes/haprimary/projects/lib:/rtv/SolacePubSubMonitor/projects/lib
-    
+    ports:
+      #exposed port for syslog (primary on <this_host>:10601)
+      - 10601:10601
     
 
   habackup:
@@ -48,6 +50,10 @@ services:
       # use local (pre populated) mounted volumes 
       - ./volumes/habackup/projects/rtview-server:/rtv/SolacePubSubMonitor/projects/rtview-server
       - ./volumes/habackup/projects/lib:/rtv/SolacePubSubMonitor/projects/lib
+    ports:
+      #exposed port for syslog (backup on <this_host>:10602)
+      - 10602:10601
+          
 
 # volumes:
   # volumes required for persistance so (updated) project settings survive a container restart (peristance)
