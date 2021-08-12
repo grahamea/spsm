@@ -7,6 +7,7 @@ services:
     image: spsm_tomcat
     build:
       context: .
+      # Use a named docker file in this directory so we only have to unzip SolacePubSubMonitor once
       dockerfile: ./tomcat.Dockerfile
     ports:
       - 8068:8068
@@ -27,6 +28,7 @@ services:
       # - haprimary_projects_volume:/rtv/SolacePubSubMonitor/projects
       # use local (pre populated) mounted volumes 
       - ./volumes/haprimary/projects/rtview-server:/rtv/SolacePubSubMonitor/projects/rtview-server
+      - ./volumes/haprimary/projects/lib:/rtv/SolacePubSubMonitor/projects/lib
     
     
 
@@ -45,6 +47,7 @@ services:
       # - habackup_projects_volume:/rtv/SolacePubSubMonitor/projects     
       # use local (pre populated) mounted volumes 
       - ./volumes/habackup/projects/rtview-server:/rtv/SolacePubSubMonitor/projects/rtview-server
+      - ./volumes/habackup/projects/lib:/rtv/SolacePubSubMonitor/projects/lib
 
 # volumes:
   # volumes required for persistance so (updated) project settings survive a container restart (peristance)
