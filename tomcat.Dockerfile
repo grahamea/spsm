@@ -48,7 +48,7 @@ COPY ${SL_TOMCAT}/README_RTVIEW.txt README_RTVIEW.txt
 #
 # copy our war files into webapps directory of the image
 #
-COPY  warfiles/*.war /usr/local/tomcat/webapps/
+COPY ${SL_TOMCAT}/warfiles/*.war /usr/local/tomcat/webapps/
 
 
 # expose the default port used by tomcat
