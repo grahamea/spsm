@@ -1,0 +1,12 @@
+
+        RTView Enterprise Monitor
+        Custom Handler Library
+        -------------------------
+
+This is the default location for the user-built rtvapm_custom.jar 
+
+This .jar is created by executing the script custom\src\make_classes.bat.
+Your command window must be initialized by having executed rtvapm_init.bat
+under rtvapm.
+
+

@@ -1,0 +1,6 @@
+#
+# Default RTView Servers
+#
+default .       dataserver      rundata -propfilter:receiver 
+#default .       historian       runhist -ds
+default .       database        rundb

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- POLLER GROUPS - DEFINES GROUPS OF POLLERS AND THEIR DESIRED POLLING RATE -->
+<poller-groups>
+
+  <poller-group>
+    <name>RTView</name>
+    <pollers>
+      <poller><poller-name>show hardware details</poller-name>     <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show environment</poller-name>          <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show memory</poller-name>               <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show version</poller-name>              <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show system</poller-name>               <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show interface</poller-name>            <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+	  <poller><poller-name>show router-name</poller-name>          <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show service</poller-name>              <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show stats client detail</poller-name>  <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show stats neighbor detail</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show cspf neighbor *</poller-name>      <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show cspf neighbor * stats</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show message-spool detail</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+	  <poller><poller-name>show message-spool stats</poller-name>  <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show routing</poller-name>              <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show bridge totals</poller-name> <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show bridge *</poller-name>      <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show bridge * stats</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show message-vpn * stats detail</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show client * stats</poller-name>            <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show client * stats queues</poller-name>     <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show queue *</poller-name>                   <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show queue * rates</poller-name>             <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show topic-endpoint *</poller-name>          <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show topic-endpoint * rates</poller-name>    <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+    </pollers>
+  </poller-group>
+
+  <poller-group>
+    <name>Appliance</name>
+    <pollers>
+      <poller><poller-name>show hardware details</poller-name>     <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show environment</poller-name>          <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show memory</poller-name>               <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show version</poller-name>              <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show interface</poller-name>            <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+	  <poller><poller-name>show router-name</poller-name>          <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show service</poller-name>              <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show stats client detail</poller-name>  <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show stats neighbor detail</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show cspf neighbor *</poller-name>      <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show cspf neighbor * stats</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show message-spool detail</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+	  <poller><poller-name>show message-spool stats</poller-name>  <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show routing</poller-name>              <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show bridge totals</poller-name> <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show bridge *</poller-name>      <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show bridge * stats</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show message-vpn * stats detail</poller-name><poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show client * stats</poller-name>            <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show client * stats queues</poller-name>     <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show queue *</poller-name>                   <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show queue * rates</poller-name>             <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show topic-endpoint *</poller-name>          <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+      <poller><poller-name>show topic-endpoint * rates</poller-name>    <poll-interval-in-sec>30</poll-interval-in-sec></poller>
+    </pollers>
+  </poller-group>
+  
+</poller-groups>

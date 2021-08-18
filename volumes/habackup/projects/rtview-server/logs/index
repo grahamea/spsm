@@ -1,0 +1,16 @@
+
+
+
+	RTView for APM
+	Logs directory
+	--------------
+
+This is the default location for log files.
+
+Whenever something goes wrong, RTView components output an error message to 
+the corresponding log files. The following files are generated automatically:
+
+	dataserver.log
+	displayserver.log
+	historian.log
+

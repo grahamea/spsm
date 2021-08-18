@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+<!--
+Built In
+=========
+The Pump requires certain information from the polled system for its status, so some of the Pollers are hardcoded in the tool
+
+show hostname
+show message-spool
+show redundancy detail
+show message-vpn * stats detail
+
+
+Config File
+============
+These others are configured below.  Others may be added by just creating a new blob of XML config.
+
+SYSTEM:
+show hardware details
+show hardware post
+show alarm
+show environment
+show memory
+show disk detail
+show version
+show interface
+show service
+show ip vrf msg-backbone
+show ip vrf management
+show config-sync
+show config-sync database
+show stats client detail
+show stats neighbor detail
+show smrp database detail
+show cspf stats
+show cspf neighbor *
+show cspf neighbor * stats
+show message-spool detail
+show message-spool stats
+show routing
+show bridge totals
+
+VPN:
+show message-vpn * detail
+show message-vpn * service
+show client * stats queues
+show client * stats
+show client * connections wide  (only on SolOS > 7.1.1 due to SEMP bug - missing message-vpn tag)
+show distributed-cache * detail
+show cache-cluster * detail
+show cache-cluster * topics
+show cache-instance * detail
+show cache-instance * remote status
+show bridge *
+show bridge * stats
+show bridge * subscriptions
+show message-spool message-vpn * detail
+show queue *
+show queue * rates
+show queue * detail
+show queue * subscriptions
+show topic-endpoint *
+show topic-endpoint * detail
+-->
+
+<!-- pollers to do still:
+ - show replication AAAA
+ - show replication stats AAAA
+ - show message-vpn * replication (?) - probably just MGMT
+ - show replicated-topic * AAAA?  (VPN - BOTH)
+ - show cspf database
+ - show dns..?
+
+ - show client * slow-subscriber
+ - per-VPN ones - e.g. show client * sorted-stats <blah>
+    - of course, these can be determined by looking at all clients and just maintaining a list
+ 
+-->
+
+<!--
+  There are 5 modes defined within the Solace Stats Publisher application for when a particular
+  Poller is supposed to run.  These are:
+   - AD-Active: only run this Poller on this appliance when it's message-spool state is AD-Active
+   - PRIMARY_LOCAL_ACTIVE: run this Poller when the primary virtual router is Active (i.e. active for your own VRRP ID)
+   - BACKUP_LOCAL_ACTIVE: run this Poller when the backup virtual router is also Active (i.e. when other appliance has failed over to this one... Primary virtual router will also be active)
+   - ALWAYS: always run this Poller, regardless of appliance condition (e.g. show environment, show hardware, etc.)
+   - NEVER: never run this Poller when appliance is in this state.
+-->
+
+  <run-configurations>
+    <run-configuration>
+      <name>AD-Active</name>
+      <run-on-primary-when-active-standby>AD_ACTIVE</run-on-primary-when-active-standby>
+      <run-on-backup-when-active-standby>AD_ACTIVE</run-on-backup-when-active-standby>
+      <run-on-primary-when-active-active>AD_ACTIVE</run-on-primary-when-active-active>
+      <run-on-backup-when-active-active>AD_ACTIVE</run-on-backup-when-active-active>
+    </run-configuration>
+    <run-configuration>
+      <name>PBPP</name>
+      <run-on-primary-when-active-standby>PRIMARY_LOCAL_ACTIVE</run-on-primary-when-active-standby>
+      <run-on-backup-when-active-standby>BACKUP_LOCAL_ACTIVE</run-on-backup-when-active-standby>
+      <run-on-primary-when-active-active>PRIMARY_LOCAL_ACTIVE</run-on-primary-when-active-active>
+      <run-on-backup-when-active-active>PRIMARY_LOCAL_ACTIVE</run-on-backup-when-active-active>
+    </run-configuration>
+    <run-configuration>
+      <name>PBAA</name>
+      <run-on-primary-when-active-standby>PRIMARY_LOCAL_ACTIVE</run-on-primary-when-active-standby>
+      <run-on-backup-when-active-standby>BACKUP_LOCAL_ACTIVE</run-on-backup-when-active-standby>
+      <run-on-primary-when-active-active>ALWAYS</run-on-primary-when-active-active>
+      <run-on-backup-when-active-active>ALWAYS</run-on-backup-when-active-active>
+    </run-configuration>
+    <run-configuration>
+      <name>AAAA</name>
+      <run-on-primary-when-active-standby>ALWAYS</run-on-primary-when-active-standby>
+      <run-on-backup-when-active-standby>ALWAYS</run-on-backup-when-active-standby>
+      <run-on-primary-when-active-active>ALWAYS</run-on-primary-when-active-active>
+      <run-on-backup-when-active-active>ALWAYS</run-on-backup-when-active-active>
+    </run-configuration>
+    <run-configuration>
+      <name>PBPB</name>
+      <run-on-primary-when-active-standby>PRIMARY_LOCAL_ACTIVE</run-on-primary-when-active-standby>
+      <run-on-backup-when-active-standby>BACKUP_LOCAL_ACTIVE</run-on-backup-when-active-standby>
+      <run-on-primary-when-active-active>PRIMARY_LOCAL_ACTIVE</run-on-primary-when-active-active>
+      <run-on-backup-when-active-active>BACKUP_LOCAL_ACTIVE</run-on-backup-when-active-active>
+    </run-configuration>
+  </run-configurations>
+
+  <pollers>
+  
+    <system-poller>
+      <name>show hardware details</name>
+      <description>Details on the chassis and blades. This will include information such as transmit
+                   power on optical links, WWN information for an attached
+                   SAN, power supplies, serial numbers, etc.  This should not be polled quickly.</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <hardware>
+              <details/>
+            </hardware>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>HARDWARE</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/hardware</base-tag>
+      <min-poll-interval-sec>60</min-poll-interval-sec> <!-- not enforced yet -->
+    </system-poller>
+
+    <system-poller>
+      <name>show router-name</name>
+      <description>Router name</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+			<show>
+				<router-name/>
+			</show>
+		</rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>ROUTER-NAME</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/router-name</base-tag>
+      <min-poll-interval-sec>30</min-poll-interval-sec>
+    </system-poller>
+	
+    <system-poller>
+      <name>show environment</name>
+      <description>Readings of various thermal and electrical sensors.</description>
+      <semp-request>
+        <rpc semp-version='%s'><show><environment/></show></rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>ENVIRONMENT</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/environment</base-tag>
+      <min-poll-interval-sec>60</min-poll-interval-sec>
+    </system-poller>
+
+    <system-poller>
+      <name>show memory</name>
+      <description>Details on the various memory pools and buffers for the whole router</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <memory/>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>MEMORY</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/memory</base-tag>
+    </system-poller>
+
+    <system-poller>
+      <name>show version</name>
+      <description>Details on the current and previously installed versions of SolOS.  And uptime.</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <version/>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>VERSION</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/version</base-tag>
+    </system-poller>
+    
+    <system-poller>
+      <name>show system</name>
+      <description>Details on the system for the whole router</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <system/>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>SYSTEM</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/system</base-tag>
+    </system-poller>    
+
+    <system-poller>
+      <name>show interface</name>
+      <description>All of the various interfaces</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <interface><detail/></interface>
+          </show>
+         </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>INTERFACE/~PHY_INTERFACE~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/interface/interfaces/interface</base-tag>
+      <object-tags>
+        <object-tag>
+          <name>PHY_INTERFACE</name>
+          <tag>/phy-interface</tag>
+        </object-tag>
+      </object-tags>
+    </system-poller>
+
+    <system-poller>
+      <name>show service</name>
+      <description>Details on the messaging and management services the router provides, and (post R7.0) connection limits</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <service/>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>SERVICE</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/service</base-tag>
+    </system-poller>
+
+    <system-poller>
+      <name>show stats client detail</name>
+      <description>Connection counts, message counts and rates, and other messaging statistics for the entire router</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <stats>
+              <client>
+                <detail/>
+              </client>
+            </stats>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>STATS_CLIENT</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/stats/client/global/stats</base-tag>
+    </system-poller>
+
+    <system-poller>
+      <name>show stats neighbor detail</name>
+      <description>Message and byte counts and rates for all CSPF neighbor connections</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <stats>
+              <neighbor>
+                <detail/>
+              </neighbor>
+            </stats>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>STATS_NEIGHBOR</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/stats/neighbor</base-tag>
+    </system-poller>
+
+    <system-poller>
+      <name>show cspf neighbor *</name>
+      <description>Shows CSPF routing information about connected neighbour routers</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <cspf>
+              <neighbor>
+                <physical-router-name>*</physical-router-name>
+              </neighbor>
+            </cspf>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>CSPF_NEIGHBOR/~NEIGHBOR~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/cspf/neighbor/neighbors/neighbor</base-tag>
+      <object-tags>
+        <object-tag>
+          <name>NEIGHBOR</name>
+          <tag>/name</tag>
+        </object-tag>
+      </object-tags>
+    </system-poller>
+
+    <system-poller>
+      <name>show cspf neighbor * stats</name>
+      <description>Shows message rates and stats between CSPF neighbour routers</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <cspf>
+              <neighbor>
+                <physical-router-name>*</physical-router-name>
+                <stats/>
+              </neighbor>
+            </cspf>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>CSPF_NEIGHBOR_STATS/~NEIGHBOR~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/cspf/neighbor/neighbors/neighbor</base-tag>
+      <object-tags>
+        <object-tag>
+          <name>NEIGHBOR</name>
+          <tag>/name</tag>
+        </object-tag>
+      </object-tags>
+    </system-poller>
+    
+    <system-poller>
+      <name>show message-spool detail</name>
+      <description>Detailed information about the router's message spool</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <message-spool>
+              <detail/>
+            </message-spool>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>MSG-SPOOL_DETAIL</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/message-spool/message-spool-info</base-tag>
+    </system-poller>
+
+    <system-poller>
+      <name>show message-spool stats</name>
+      <description>Reports a number of statistics for the global / router-wide message spool</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <message-spool>
+              <stats/>
+            </message-spool>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>MSG-SPOOL_STATS</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/message-spool/message-spool-stats</base-tag>
+    </system-poller>
+
+    <system-poller>
+      <name>show routing</name>
+      <description>Reports a number of statistics for the global / router-wide message spool</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <routing/>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>MGMT</destination>
+      <topic-string-suffix>ROUTING</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/routing</base-tag>
+    </system-poller>
+    
+    <system-poller>
+      <name>show bridge totals</name>
+      <description>Details on messaging bridges between this VPN and other remote ones</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <bridge>
+              <bridge-name-pattern></bridge-name-pattern>
+            </bridge>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>BRIDGE_TOTALS</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/bridge/bridges</base-tag>
+    </system-poller>
+
+    <vpn-poller>
+      <name>show message-vpn * stats detail</name>
+      <description>Reports back a number of aggregate statistics for a Message VPN</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <message-vpn>
+              <vpn-name>*</vpn-name>
+              <stats/>
+              <detail/>
+              <count/>
+              <num-elements>1000</num-elements>
+            </message-vpn>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>STATS_DETAIL</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/message-vpn/vpn</base-tag>
+      <vpn-name-tag>/name</vpn-name-tag>
+    </vpn-poller>
+
+    <vpn-poller>
+      <name>show client * stats queues</name>
+      <description>Shows various details for client connections, as well as the egress transmit queues (buffers) within the NAB</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <client>
+              <name>*</name>
+              <vpn-name>*</vpn-name>
+              <stats/>
+              <queues/>
+              <count/>
+              <num-elements>500</num-elements>
+           </client>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>CLIENT_QUEUE/~CLIENT_NAME~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/client/*/client</base-tag>
+      <vpn-name-tag>/message-vpn</vpn-name-tag>
+      <object-tags>
+        <object-tag>
+          <name>CLIENT_NAME</name>
+          <tag>/name</tag>
+        </object-tag>
+      </object-tags>
+    </vpn-poller>
+
+    <vpn-poller>
+      <name>show client * stats</name>
+      <description>Shows statistics and rates for client connections</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <client>
+              <name>*</name>
+              <vpn-name>*</vpn-name>
+              <stats/>
+              <count/>
+              <num-elements>500</num-elements>
+            </client>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>CLIENT_STATS/~CLIENT_NAME~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/client/*/client</base-tag>
+      <vpn-name-tag>/message-vpn</vpn-name-tag>
+      <object-tags>
+        <object-tag>
+          <name>CLIENT_NAME</name>
+          <tag>/name</tag>
+        </object-tag>
+      </object-tags>
+    </vpn-poller>
+
+    <vpn-poller>
+      <name>show bridge *</name>
+      <description>Details on messaging bridges between this VPN and other remote ones</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <bridge>
+              <bridge-name-pattern>*</bridge-name-pattern>
+            </bridge>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>BRIDGE/~BRIDGE_NAME~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/bridge/bridges/bridge</base-tag>
+      <vpn-name-tag>/local-vpn-name</vpn-name-tag>
+      <object-tags>
+        <object-tag>
+          <name>BRIDGE_NAME</name>
+          <tag>/bridge-name</tag>
+        </object-tag>
+      </object-tags>
+    </vpn-poller>
+
+    <vpn-poller>
+      <name>show bridge * stats</name>
+      <description>Details and statistics on messaging bridges between this VPN and other remote ones</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <bridge>
+              <bridge-name-pattern>*</bridge-name-pattern>
+              <stats/>
+            </bridge>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>BRIDGE_STATS/~BRIDGE_NAME~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/bridge/bridges/bridge</base-tag>
+      <vpn-name-tag>/local-vpn-name</vpn-name-tag>
+      <object-tags>
+        <object-tag>
+          <name>BRIDGE_NAME</name>
+          <tag>/bridge-name</tag>
+        </object-tag>
+      </object-tags>
+    </vpn-poller>
+    
+    <vpn-poller>
+      <name>show queue *</name>
+      <description>VPN Queue Basic Info</description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <queue>
+              <name>*</name>
+              <vpn-name>*</vpn-name>
+              <count/>
+              <num-elements>500</num-elements>
+            </queue>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>QUEUE/~QUEUE_NAME~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/queue/queues/queue</base-tag>
+      <vpn-name-tag>/info/message-vpn</vpn-name-tag>
+      <object-tags>
+        <object-tag>
+          <name>QUEUE_NAME</name>
+          <tag>/name</tag>
+        </object-tag>
+      </object-tags>
+    </vpn-poller>
+
+    <vpn-poller>
+      <name>show queue * rates</name>
+      <description> </description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <queue>
+              <name>*</name>
+              <vpn-name>*</vpn-name>
+              <rates/>
+              <count/>
+              <num-elements>500</num-elements>
+            </queue>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>QUEUE_RATES/~QUEUE_NAME~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/queue/queues/queue</base-tag>
+      <vpn-name-tag>/info/message-vpn</vpn-name-tag>
+      <object-tags>
+        <object-tag>
+          <name>QUEUE_NAME</name>
+          <tag>/name</tag>
+        </object-tag>
+      </object-tags>
+    </vpn-poller>
+  
+    <vpn-poller>
+      <name>show topic-endpoint *</name>
+      <description> </description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <topic-endpoint>
+              <name>*</name>
+              <vpn-name>*</vpn-name>
+              <count/>
+              <num-elements>500</num-elements>
+            </topic-endpoint>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>TE/~TE_NAME~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/topic-endpoint/topic-endpoints/topic-endpoint</base-tag>
+      <vpn-name-tag>/info/message-vpn</vpn-name-tag>
+      <object-tags>
+        <object-tag>
+          <name>TE_NAME</name>
+          <tag>/name</tag>
+        </object-tag>
+      </object-tags>
+    </vpn-poller>
+
+    <vpn-poller>
+      <name>show topic-endpoint * rates</name>
+      <description> </description>
+      <semp-request>
+        <rpc semp-version='%s'>
+          <show>
+            <topic-endpoint>
+              <name>*</name>
+              <vpn-name>*</vpn-name>
+              <rates/>
+              <count/>
+              <num-elements>500</num-elements>
+            </topic-endpoint>
+          </show>
+        </rpc>
+      </semp-request>
+      <run-configuration>AAAA</run-configuration>
+      <destination>BOTH</destination>
+      <topic-string-suffix>TE_RATES/~TE_NAME~</topic-string-suffix>
+      <base-tag>/rpc-reply/rpc/show/topic-endpoint/topic-endpoints/topic-endpoint</base-tag>
+      <vpn-name-tag>/info/message-vpn</vpn-name-tag>
+      <object-tags>
+        <object-tag>
+          <name>TE_NAME</name>
+          <tag>/name</tag>
+        </object-tag>
+      </object-tags>
+    </vpn-poller>
+  </pollers>
+</config>
