@@ -1,13 +1,15 @@
 #!/bin/bash
 #
-# setup_volumes.sh
+# stage_volumes.sh
 # set up the required local persistent volumes for mounting in the spsm containers
 # add a lib directory for files we may neeed to add (e.g. database jars) 
 #
 # set up primary
 mkdir -p volumes/haprimary/projects/lib
+touch volumes/haprimary/projects/lib/empty.txt
 # set up backup 
 mkdir -p volumes/habackup/projects/lib
+touch volumes/habackup/projects/lib/empty.txt
 
 # pre populate from SolacePubSubMonitor
 
