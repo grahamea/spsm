@@ -97,6 +97,39 @@ docker-compose build
 docker-compose up -d
 ```
 
+### ps
+
+```shell
+docker-compose ps
+```
+
+### logs
+
+docker-compose logs <service>
+
+```shell
+docker-compose logs tomcat
+docker-compose logs haprimary
+docker-compose logs habackup
+```
+
+docker-compose logs -f <service>
+if you want to continiously monitor the log for a service
+
+### "Shell"-ing into a container
+
+docker-compose exec <service> <command>
+
+
+```shell
+docker-compose exec tomcat /bin/bash
+docker-compose exec haprimary /bin/bash
+docker-compose exec habackup  /bin/bash
+```
+
+
+
+
 ## Stopping 
 
 ```shell
