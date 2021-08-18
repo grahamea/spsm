@@ -1,0 +1,8 @@
+#individual user
+#rtvadmin:CN=Tom,CN=Users,DC=mycompany,DC=com
+#rtvuser:CN=Susan,CN=Users,DC=mycompany,DC=com
+
+#group, for use with "memberOf"
+#rtvadmin:CN=Administrators,CN=Roles,DC=mycompany,DC=com
+#rtvuser:CN=Users,CN=Roles,DC=mycompany,DC=com
+
