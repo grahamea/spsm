@@ -72,7 +72,7 @@ that uses the haprimary and habackup host names and then copied to the staging/t
 We use (locally mounted) volumes to provide persistance to the spsm containers haprimary and habackup
 So config changes will persist, and so that we can inject files used at runtime (e.g. database connector jars)
 
-We need to create the volumnes for mounting 
+We need to create the volumes for mounting 
 We also need to need to pre-populate the volumes as they will replace the contents of the mount point
 
 This is done by the script staging/stage_volumes.sh e.g.
