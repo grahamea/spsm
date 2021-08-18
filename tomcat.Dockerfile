@@ -19,8 +19,10 @@ RUN \
 # Copy the additional/modified files from the SolacePubSubMonitor
 # Tomcat installation to this installation 
 #
-ENV SL_TOMCAT SolacePubSubMonitor/apache-tomcat-8.5.69-sl
+#ENV SL_TOMCAT SolacePubSubMonitor/apache-tomcat-8.5.69-sl
 
+#Use the staged tomcat files instead
+ENV SL_TOMCAT staged/tomcat
 
 #
 # Copy the modified configuration files 
